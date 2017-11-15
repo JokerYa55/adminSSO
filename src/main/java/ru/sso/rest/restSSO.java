@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -30,7 +31,8 @@ import ru.sso.beans.TUsers;
 public class restSSO {
 
     private final Logger log = Logger.getLogger(getClass().getName());
-    private final EntityManager em = Persistence.createEntityManagerFactory("adminSSO_JPA").createEntityManager();
+    private EntityManager em = null;
+    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("adminSSO_JPA");
 
     @GET
     @Path("/test/{name}")
@@ -45,6 +47,9 @@ public class restSSO {
     @Path("/getUser/{name}")
     @Produces(MediaType.APPLICATION_JSON)
     public ResultClass getuser(@PathParam("name") String name) {
+        if (em == null) {
+            em = emf.createEntityManager();
+        }
         log.info("getuser");
         ResultClass res;
         TUsersDAO dao = new TUsersDAO(em);
@@ -58,7 +63,8 @@ public class restSSO {
         } else {
             res.setComment("user record count = 0");
         }
-
+        em.clear();
+        em.close();
         return res;
     }
 

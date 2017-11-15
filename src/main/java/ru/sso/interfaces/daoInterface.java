@@ -157,7 +157,7 @@ public interface daoInterface<T, V> {
                 res = namedQuery.setMaxResults(plimit).getResultList();
             }
             em.getTransaction().commit();
-            em.close();
+            //em.close();
         } catch (Exception e) {
             getLog().log(Logger.Level.ERROR, e);
         }
